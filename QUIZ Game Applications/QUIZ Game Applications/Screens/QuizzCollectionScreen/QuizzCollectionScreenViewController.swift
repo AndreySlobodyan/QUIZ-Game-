@@ -10,20 +10,22 @@ import UIKit
 
 
 protocol QuizzDisplayLogic: AnyObject {
-    func displayData()
+    func display(data: [QuizzModell])
 }
 
 var quizzCollectionView: UICollectionView!
 
 class QuizzCollectionScreenViewController: UIViewController {
     
-    private let categories = ["Mathematics", "Physics", "Biology", "Geography"]
     private let cellReuseIdentifier = "Cell"
     
+    //MARK: - External Vars
+    private(set) weak var router: QuizzRoutingLogic?
     
-    
+    //MARK: - Internal Vars
     private var interactor: QuizzBusinessLogic?
-    
+    private var dataToDispaly = [QuizzModell]()
+   
     
     // MARK: - Dependency Injection
     
@@ -40,15 +42,19 @@ class QuizzCollectionScreenViewController: UIViewController {
         let viewController = self
         let interactor = QuizzInteractor()
         let presenter = QuizzPresenter()
+        let router = QuizzRouter()
         interactor.presenter = presenter
         presenter.viewController = viewController
         viewController.interactor = interactor
-        
+        router.viewController = viewController
+        viewController.router = router
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        interactor?.request()
+        print(dataToDispaly)
         
         setupCollectionView()
     }
@@ -65,7 +71,7 @@ class QuizzCollectionScreenViewController: UIViewController {
             quizzCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
         quizzCollectionView.dataSource = self
-        quizzCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
+        quizzCollectionView.register(QuizzCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
     }
     
     func setupFlowLayout() -> UICollectionViewFlowLayout {
@@ -83,21 +89,18 @@ class QuizzCollectionScreenViewController: UIViewController {
 extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return categories.count
+        return dataToDispaly.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-       
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath)
-                cell.backgroundColor = .lightGray
-                cell.layer.cornerRadius = 25
-                let label = UILabel(frame: cell.contentView.bounds)
-                label.textAlignment = .center
-                label.text = categories[indexPath.item]
-                label.textColor = .black
-                cell.contentView.addSubview(label)
-                return cell
-        }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier, for: indexPath) as!
+        QuizzCollectionViewCell
+        cell.backgroundColor = .lightGray
+        cell.layer.cornerRadius = 25
+        cell.setupCell(data: dataToDispaly[indexPath.item])
+        return cell
+       }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     
@@ -107,8 +110,13 @@ extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICol
 //MARK: - DisplayLogic
 
 extension QuizzCollectionScreenViewController: QuizzDisplayLogic {
-    func displayData() {
+    func display(data: [QuizzModell]) {
+        dataToDispaly.removeAll()
+        dataToDispaly.append(contentsOf: data)
+        
         
     }
+    
+   
     
 }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MathematicsViewController: UIViewController {
+class QuestionScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

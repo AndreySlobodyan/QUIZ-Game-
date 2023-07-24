@@ -8,9 +8,8 @@
 import Foundation
 
 protocol QuizzPresentahionLogic {
-      func presentdata()
+    func present(data: [QuizzBackendModel])
 }
-
 
 class QuizzPresenter {
 //MARK: - PresenterDelegate 
@@ -20,9 +19,13 @@ class QuizzPresenter {
 
 //MARK: - PresentahionLogic
 extension QuizzPresenter:  QuizzPresentahionLogic {
-    func presentdata() {
-        
+    func present(data: [QuizzBackendModel]) {
+        let quizzData = data.map { backModel -> QuizzModell in
+          
+            let quizzModel = QuizzModell(categories: backModel.categories, id: backModel.id)
+            return quizzModel
+        }
+        viewController?.display(data: quizzData)
     }
-    
     
 }
