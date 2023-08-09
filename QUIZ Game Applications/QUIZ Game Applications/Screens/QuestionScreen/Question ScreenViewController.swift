@@ -145,7 +145,7 @@ class QuestionScreenViewController: UIViewController {
     }
     
     func setupAnswers(data: QuestionModel) {
-        // Здесь вы можете создать случайные ответы, один из которых будет правильным, а остальные неправильными
+        
         correctAnswer = data.correctAnswer
         wrongAnswers = data.wrongAnswers
         
