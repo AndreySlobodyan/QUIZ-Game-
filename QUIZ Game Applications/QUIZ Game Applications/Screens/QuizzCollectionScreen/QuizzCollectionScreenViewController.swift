@@ -20,7 +20,7 @@ class QuizzCollectionScreenViewController: UIViewController {
     private let cellReuseIdentifier = "Cell"
     
     //MARK: - External Vars
-    private(set) weak var router: QuizzRoutingLogic?
+    private(set) var router: QuizzRoutingLogic?
     
     //MARK: - Internal Vars
     private var interactor: QuizzBusinessLogic?
@@ -54,7 +54,7 @@ class QuizzCollectionScreenViewController: UIViewController {
         super.viewDidLoad()
         
         interactor?.request()
-        print(dataToDispaly)
+       
         
         setupCollectionView()
     }
@@ -71,6 +71,7 @@ class QuizzCollectionScreenViewController: UIViewController {
             quizzCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
         quizzCollectionView.dataSource = self
+        quizzCollectionView.delegate = self
         quizzCollectionView.register(QuizzCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
     }
     
@@ -103,7 +104,9 @@ extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICol
        }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    
+        let dataCategory = self.dataToDispaly[indexPath.item]
+        router?.navigateToDetalis(quizzData: dataCategory)
+        
     }
 }
 

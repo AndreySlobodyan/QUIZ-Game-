@@ -8,8 +8,9 @@
 import Foundation
 import UIKit
 
-protocol QuizzRoutingLogic: AnyObject {
-    func navigateToDetalis()
+protocol QuizzRoutingLogic {
+    func navigateToDetalis(quizzData: QuizzModell)
+    
 }
 
 class QuizzRouter {
@@ -17,9 +18,17 @@ class QuizzRouter {
 }
 
 extension QuizzRouter: QuizzRoutingLogic {
-    func navigateToDetalis() {
+    func navigateToDetalis(quizzData: QuizzModell) {
+        let questionViewController = QuestionScreenViewController()
+        
+        questionViewController.router?.dataStore?.dataQuestion = quizzData
+    viewController?.navigationController?.pushViewController(questionViewController, animated: true)
+    
+    }
+    
+  
     
     }
     
     
-}
+

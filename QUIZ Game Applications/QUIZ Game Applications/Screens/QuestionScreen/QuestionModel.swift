@@ -1,18 +1,16 @@
 //
-//  BackendModel.swift
+//  QuestionModel.swift
 //  QUIZ Game Applications
 //
-//  Created by mac on 24.07.2023.
+//  Created by mac on 05.08.2023.
 //
 
 import Foundation
-struct QuizzBackendModel {
-    
-    let categories: String
+
+struct QuestionModel {
     let id: Int
     let question: String
     let correctAnswer: String
     let wrongAnswers: [String]
-    
-    
 }
+

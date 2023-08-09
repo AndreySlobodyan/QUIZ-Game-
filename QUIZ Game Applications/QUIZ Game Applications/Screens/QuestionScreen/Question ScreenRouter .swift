@@ -6,3 +6,24 @@
 //
 
 import Foundation
+
+protocol QuestionRoutingLogic{
+    
+}
+
+
+protocol QuestionDataPassing {
+    var dataStore: QuestionStoreProtocol? {get}
+}
+
+class QuestionRouter: QuestionDataPassing {
+    
+   weak var dataStore: QuestionStoreProtocol?
+    
+    
+}
+
+extension QuestionRouter: QuestionRoutingLogic{
+    
+    
+}

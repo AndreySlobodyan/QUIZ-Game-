@@ -35,6 +35,7 @@ class QuizzCollectionViewCell: UICollectionViewCell {
         
         func setupCell(data: QuizzModell) {
             label.text = data.categories
+            
         }
     }
 
