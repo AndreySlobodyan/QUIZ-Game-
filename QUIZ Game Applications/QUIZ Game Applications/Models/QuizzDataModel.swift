@@ -8,6 +8,7 @@
 import Foundation
 
 struct QuizzDataModel {
+    
     let quizzModel: QuizzModell
     let questionModel: [QuestionModel]
 }

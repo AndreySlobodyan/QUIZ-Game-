@@ -8,6 +8,7 @@
 import Foundation
 
 struct QuestionModel {
+    
     let id: Int
     let question: String
     let correctAnswer: String

@@ -14,21 +14,19 @@ protocol QuizzRoutingLogic {
 }
 
 class QuizzRouter {
+    
     weak var viewController: UIViewController?
 }
 
 extension QuizzRouter: QuizzRoutingLogic {
+    
     func navigateToDetalis(quizzData: QuizzModell) {
         let questionViewController = QuestionScreenViewController()
-        
         questionViewController.router?.dataStore?.dataQuestion = quizzData
-    viewController?.navigationController?.pushViewController(questionViewController, animated: true)
-    
+        viewController?.navigationController?.pushViewController(questionViewController, animated: true)
+        
     }
-    
-  
-    
-    }
-    
-    
+}
+
+
 

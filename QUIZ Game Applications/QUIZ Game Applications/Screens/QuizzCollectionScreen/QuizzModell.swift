@@ -6,7 +6,9 @@
 //
 
 import Foundation
+
 struct QuizzModell {
+    
     let categories: String
     let id: Int
 }

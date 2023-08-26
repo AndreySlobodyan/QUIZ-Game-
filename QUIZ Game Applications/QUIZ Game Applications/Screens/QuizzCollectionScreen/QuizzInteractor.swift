@@ -8,10 +8,12 @@
 import Foundation
 
 protocol QuizzBusinessLogic {
+    
     func request()
 }
 
 class QuizzInteractor {
+    
 //MARK: -  InteractorDelegate
     var presenter: QuizzPresentahionLogic?
 }
@@ -31,5 +33,4 @@ extension QuizzInteractor: QuizzBusinessLogic {
         
         presenter?.present(data: response)
     }
-    
 }

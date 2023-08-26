@@ -8,31 +8,37 @@
 import Foundation
 import UIKit
 
-
 protocol QuizzDisplayLogic: AnyObject {
+    
     func display(data: [QuizzModell])
 }
 
-var quizzCollectionView: UICollectionView!
-
 class QuizzCollectionScreenViewController: UIViewController {
-    
-    private let cellReuseIdentifier = "Cell"
-    
     //MARK: - External Vars
-    private(set) var router: QuizzRoutingLogic?
     
+    private(set) var router: QuizzRoutingLogic?
     //MARK: - Internal Vars
+    
     private var interactor: QuizzBusinessLogic?
     private var dataToDispaly = [QuizzModell]()
-   
+    //CollectionView
+    let quizzCollectionView: UICollectionView =  {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = .init(width: 128, height: 128)
+        layout.minimumLineSpacing = 32
+        layout.sectionInset = .init(top: 64, left: 32, bottom: 32, right: 32)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return view
+    }()
     
+    private let cellReuseIdentifier = "Cell"
     // MARK: - Dependency Injection
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         setup()
     }
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
@@ -54,14 +60,11 @@ class QuizzCollectionScreenViewController: UIViewController {
         super.viewDidLoad()
         
         interactor?.request()
-       
-        
         setupCollectionView()
     }
     
     func setupCollectionView(){
         
-        quizzCollectionView = UICollectionView(frame: .zero, collectionViewLayout: setupFlowLayout())
         view.addSubview(quizzCollectionView)
         quizzCollectionView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -74,19 +77,9 @@ class QuizzCollectionScreenViewController: UIViewController {
         quizzCollectionView.delegate = self
         quizzCollectionView.register(QuizzCollectionViewCell.self, forCellWithReuseIdentifier: cellReuseIdentifier)
     }
-    
-    func setupFlowLayout() -> UICollectionViewFlowLayout {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = .init(width: 128, height: 128)
-        layout.minimumLineSpacing = 32
-        layout.sectionInset = .init(top: 64, left: 32, bottom: 32, right: 32)
-        
-        return layout
-    }
-    
 }
-
 //MARK: - CollectionViewDataSource, UICollectionViewDelegate
+
 extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -101,7 +94,7 @@ extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICol
         cell.layer.cornerRadius = 25
         cell.setupCell(data: dataToDispaly[indexPath.item])
         return cell
-       }
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let dataCategory = self.dataToDispaly[indexPath.item]
@@ -113,13 +106,10 @@ extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICol
 //MARK: - DisplayLogic
 
 extension QuizzCollectionScreenViewController: QuizzDisplayLogic {
+    
     func display(data: [QuizzModell]) {
         dataToDispaly.removeAll()
         dataToDispaly.append(contentsOf: data)
         
-        
     }
-    
-   
-    
 }

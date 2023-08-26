@@ -4,8 +4,8 @@
 //
 //  Created by mac on 24.07.2023.
 //
-
 import Foundation
+
 struct QuizzBackendModel {
     
     let categories: String
@@ -13,6 +13,4 @@ struct QuizzBackendModel {
     let question: String
     let correctAnswer: String
     let wrongAnswers: [String]
-    
-    
 }
