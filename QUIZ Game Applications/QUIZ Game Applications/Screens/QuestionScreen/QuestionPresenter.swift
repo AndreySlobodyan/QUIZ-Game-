@@ -15,6 +15,7 @@ protocol QuestionPresentahionLogic {
 class QuestionPresenter{
     
     weak var viewController: QuestionDisplayLogic?
+    
 }
 
 extension QuestionPresenter: QuestionPresentahionLogic {
@@ -24,5 +25,4 @@ extension QuestionPresenter: QuestionPresentahionLogic {
         let dataTodisplay = QuizzDataModel(quizzModel: data.quizzModel, questionModel: filteredQuestions)
        viewController?.display(data: dataTodisplay)
     }
-    
 }

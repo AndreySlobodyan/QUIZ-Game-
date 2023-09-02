@@ -24,7 +24,6 @@ extension QuizzRouter: QuizzRoutingLogic {
         let questionViewController = QuestionScreenViewController()
         questionViewController.router?.dataStore?.dataQuestion = quizzData
         viewController?.navigationController?.pushViewController(questionViewController, animated: true)
-        
     }
 }
 
