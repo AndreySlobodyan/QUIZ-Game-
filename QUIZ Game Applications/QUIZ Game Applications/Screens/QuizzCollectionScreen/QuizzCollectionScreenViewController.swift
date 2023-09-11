@@ -61,6 +61,7 @@ class QuizzCollectionScreenViewController: UIViewController {
         
         interactor?.request()
         setupCollectionView()
+        navigationItem.hidesBackButton = true
     }
     
     func setupCollectionView(){

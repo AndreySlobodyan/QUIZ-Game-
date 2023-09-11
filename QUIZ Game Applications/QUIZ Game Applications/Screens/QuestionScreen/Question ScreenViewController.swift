@@ -4,6 +4,7 @@
 //
 //  Created by mac on 20.07.2023.
 //
+
 import UIKit
 
 protocol QuestionDisplayLogic: AnyObject {
@@ -20,12 +21,14 @@ class QuestionScreenViewController: UIViewController {
     
     private  var dataTodisplayQuestion = [QuestionModel]()
     private var category: QuizzModell?
+    private var currentQuestionIndex: Int = 0
+    private var wrongQuestionScore: Int = 0
+    private var correctQuestionScore: Int = 0
     private var interactor: (QuestionBusinessLogic & QuestionStoreProtocol)?
     //MARK: - quest
     
     let buttonStackView = UIStackView()
     let questionLabel = UILabel()
-    
     let answer1Button: UIButton = {
         let button1  = UIButton(type: .system)
         button1.setTitleColor(.black, for: .normal)
@@ -68,6 +71,7 @@ class QuestionScreenViewController: UIViewController {
         presenter.viewController = viewController
         router.dataStore = interactor
         viewController.interactor = interactor
+        router.viewController = viewController
         viewController.router = router
         
     }
@@ -83,7 +87,15 @@ class QuestionScreenViewController: UIViewController {
         setupAnswerButtons()
         setupQuestion(data: dataTodisplayQuestion[IndexPath.Element()])
         setupAnswers(data: dataTodisplayQuestion[IndexPath.Element()])
+        self.tabBarController?.tabBar.isHidden = true
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.tabBarController?.tabBar.isHidden = false
+    }
+    
     //MARK: - SETUP Question
     
     func setupQuestionLabel() {
@@ -143,34 +155,63 @@ class QuestionScreenViewController: UIViewController {
         // Mix answers randomly
         let allAnswers = [correctAnswer] + wrongAnswers
         let shuffledAnswers = allAnswers.shuffled()
-        
         answer1Button.setTitle(shuffledAnswers[0], for: .normal)
         answer2Button.setTitle(shuffledAnswers[1], for: .normal)
         answer3Button.setTitle(shuffledAnswers[2], for: .normal)
         answer4Button.setTitle(shuffledAnswers[3], for: .normal)
     }
     
+    //display the next question
+    private func displayNextQuestion() {
+        
+        guard currentQuestionIndex < dataTodisplayQuestion.count else {
+            if presentationController != nil {
+                dismiss(animated: false){
+                    let alertController = UIAlertController(title: "Score:", message: "Correct: \(self.correctQuestionScore) Wrong: \(self.wrongQuestionScore)", preferredStyle: .alert)
+                    let nextAction = UIAlertAction(title: "Сomplete", style: .default){ [weak self] _ in
+                        self?.router?.navigateToQuizz()
+                    }
+                    alertController.addAction(nextAction)
+                    self.present(alertController, animated: true, completion: nil)
+                }
+            }
+            return }
+        let currentQuestion = dataTodisplayQuestion[currentQuestionIndex]
+        setupQuestion(data: currentQuestion)
+        setupAnswers(data: currentQuestion)
+    }
+    // AlertController implementation
     @objc func answerButtonTapped(_ sender: UIButton) {
         
         let selectedAnswer = sender.currentTitle ?? ""
         if selectedAnswer == correctAnswer {
-            // Responsible, according to everyday reading with confirmation
             let alertController = UIAlertController(title: "Правильный ответ!", message: "Вы ответили верно.", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            let okAction = UIAlertAction(title: "OK", style: .default){ (_) in
+                self.currentQuestionIndex += 1
+                self.displayNextQuestion()
+            }
             alertController.addAction(okAction)
-            present(alertController, animated: true, completion: nil)
+            present(alertController, animated: true)
+            correctQuestionScore += 1
+        } else {
+            let alerttController = UIAlertController(title: "Ответ не правильный !", message: "Вы ответили не верно.", preferredStyle: .alert)
+            let wrongAction = UIAlertAction(title: "OK", style: .default) { (_) in
+                self.currentQuestionIndex += 1
+                self.displayNextQuestion()
+            }
+            alerttController.addAction(wrongAction)
+            present(alerttController, animated: true)
+            wrongQuestionScore += 1
         }
     }
 }
-
-
 //MARK: - DisplayLogic
+
 extension QuestionScreenViewController: QuestionDisplayLogic {
     
     func display(data: QuizzDataModel) {
         dataTodisplayQuestion = data.questionModel
         category = data.quizzModel
-        
     }
 }
 
