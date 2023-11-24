@@ -9,24 +9,17 @@ import UIKit
 
 protocol QuestionDisplayLogic: AnyObject {
     
-    func display(data: QuizzDataModel)
+    func display(data: QuestionModel)
+    func showQuizzScore(wrongScore: Int, correctScore: Int)
+    func wrongShowAlert()
+    func correcShowAlert()
 }
 
 class QuestionScreenViewController: UIViewController {
     
-    //MARK: - External vars
-    
     private(set) var router: (QuestionRoutingLogic & QuestionDataPassing)?
-    //MARK: - Internal vars
-    
-    private  var dataTodisplayQuestion = [QuestionModel]()
-    private var category: QuizzModell?
-    private var currentQuestionIndex: Int = 0
-    private var wrongQuestionScore: Int = 0
-    private var correctQuestionScore: Int = 0
     private var interactor: (QuestionBusinessLogic & QuestionStoreProtocol)?
     //MARK: - quest
-    
     let buttonStackView = UIStackView()
     let questionLabel = UILabel()
     let answer1Button: UIButton = {
@@ -49,9 +42,6 @@ class QuestionScreenViewController: UIViewController {
         button4.setTitleColor(.black, for: .normal)
         return button4
     }()
-    let question: String = ""
-    var correctAnswer: String = ""
-    var wrongAnswers: [String] = []
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -63,6 +53,7 @@ class QuestionScreenViewController: UIViewController {
     }
     
     private func setup(){
+        
         let viewController = self
         let interactor = QuestionInteractor()
         let router = QuestionRouter()
@@ -78,15 +69,13 @@ class QuestionScreenViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.addSubview(buttonStackView)
         view.backgroundColor = .lightGray
         interactor?.request()
         view.backgroundColor = .white
         setupQuestionLabel()
         setupAnswerButtons()
-        setupQuestion(data: dataTodisplayQuestion[IndexPath.Element()])
-        setupAnswers(data: dataTodisplayQuestion[IndexPath.Element()])
+        navigationItem.hidesBackButton = true
         self.tabBarController?.tabBar.isHidden = true
     }
     
@@ -97,7 +86,6 @@ class QuestionScreenViewController: UIViewController {
     }
     
     //MARK: - SETUP Question
-    
     func setupQuestionLabel() {
         
         questionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -150,8 +138,8 @@ class QuestionScreenViewController: UIViewController {
     
     func setupAnswers(data: QuestionModel) {
         
-        correctAnswer = data.correctAnswer
-        wrongAnswers = data.wrongAnswers
+        let correctAnswer = data.correctAnswer
+        let wrongAnswers = data.wrongAnswers
         // Mix answers randomly
         let allAnswers = [correctAnswer] + wrongAnswers
         let shuffledAnswers = allAnswers.shuffled()
@@ -161,57 +149,43 @@ class QuestionScreenViewController: UIViewController {
         answer4Button.setTitle(shuffledAnswers[3], for: .normal)
     }
     
-    //display the next question
-    private func displayNextQuestion() {
-        
-        guard currentQuestionIndex < dataTodisplayQuestion.count else {
-            if presentationController != nil {
-                dismiss(animated: false){
-                    let alertController = UIAlertController(title: "Score:", message: "Correct: \(self.correctQuestionScore) Wrong: \(self.wrongQuestionScore)", preferredStyle: .alert)
-                    let nextAction = UIAlertAction(title: "Сomplete", style: .default){ [weak self] _ in
-                        self?.router?.navigateToQuizz()
-                    }
-                    alertController.addAction(nextAction)
-                    self.present(alertController, animated: true, completion: nil)
-                }
-            }
-            return }
-        let currentQuestion = dataTodisplayQuestion[currentQuestionIndex]
-        setupQuestion(data: currentQuestion)
-        setupAnswers(data: currentQuestion)
-    }
     // AlertController implementation
     @objc func answerButtonTapped(_ sender: UIButton) {
         
         let selectedAnswer = sender.currentTitle ?? ""
-        if selectedAnswer == correctAnswer {
-            let alertController = UIAlertController(title: "Правильный ответ!", message: "Вы ответили верно.", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "OK", style: .default){ (_) in
-                self.currentQuestionIndex += 1
-                self.displayNextQuestion()
-            }
-            alertController.addAction(okAction)
-            present(alertController, animated: true)
-            correctQuestionScore += 1
-        } else {
-            let alerttController = UIAlertController(title: "Ответ не правильный !", message: "Вы ответили не верно.", preferredStyle: .alert)
-            let wrongAction = UIAlertAction(title: "OK", style: .default) { (_) in
-                self.currentQuestionIndex += 1
-                self.displayNextQuestion()
-            }
-            alerttController.addAction(wrongAction)
-            present(alerttController, animated: true)
-            wrongQuestionScore += 1
-        }
+        interactor?.answerDidSelect(someAnswer: selectedAnswer)
+        
     }
 }
 //MARK: - DisplayLogic
-
 extension QuestionScreenViewController: QuestionDisplayLogic {
+    func correcShowAlert() {
+        
+        router?.correctAllertQuestion(completion: {[weak self] in
+            self?.interactor?.moveToNextQuestion()
+        })
+    }
     
-    func display(data: QuizzDataModel) {
-        dataTodisplayQuestion = data.questionModel
-        category = data.quizzModel
+    func wrongShowAlert() {
+        
+        router?.wrongAllertQuestion(completion: {[weak self] in
+            self?.interactor?.moveToNextQuestion()
+        })
+    }
+    
+    func showQuizzScore(wrongScore: Int, correctScore: Int) {
+        
+        if presentationController != nil {
+            dismiss(animated: false){
+                self.router?.navigateToQuizz(dataCorect: correctScore, dataWrong: wrongScore )
+            }
+        }
+    }
+    
+    func display(data: QuestionModel) {
+        
+        setupQuestion(data: data)
+        setupAnswers(data: data)
     }
 }
 

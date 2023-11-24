@@ -18,12 +18,12 @@ class QuizzPresenter {
     weak var viewController: QuizzDisplayLogic?
 }
 
-
 //MARK: - PresentahionLogic
 
 extension QuizzPresenter:  QuizzPresentahionLogic {
     
     func present(data: [QuizzBackendModel]) {
+        
         let quizzData = data.map { backModel -> QuizzModell in
             
             let quizzModel = QuizzModell(categories: backModel.categories, id: backModel.id)

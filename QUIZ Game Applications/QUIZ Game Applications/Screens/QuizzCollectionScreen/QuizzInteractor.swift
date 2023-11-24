@@ -20,6 +20,7 @@ class QuizzInteractor {
 
 //MARK: - BusinessLogic
 extension QuizzInteractor: QuizzBusinessLogic {
+    
     func request() {
         var response = [QuizzBackendModel]()
         let responceData = QuizzBackendModel(categories: "Mathematics", id: 1, question: "2 + 2 = ?", correctAnswer: "4", wrongAnswers: ["3", "5", "6"]  )
