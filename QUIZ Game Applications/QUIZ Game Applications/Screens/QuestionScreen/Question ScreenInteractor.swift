@@ -10,6 +10,8 @@ import Foundation
 protocol QuestionBusinessLogic {
     
     func request()
+    func moveToNextQuestion()
+    func answerDidSelect(someAnswer: String)
 }
 
 protocol QuestionStoreProtocol: AnyObject {
@@ -21,15 +23,16 @@ protocol QuestionStoreProtocol: AnyObject {
 class QuestionInteractor: QuestionStoreProtocol {
     
     var dataQuestion: QuizzModell?
-    
     //MARK: -  InteractorDelegate
-    
     var presenter: QuestionPresentahionLogic?
 }
 
 extension QuestionInteractor: QuestionBusinessLogic {
+    func answerDidSelect(someAnswer: String) {
+        presenter?.answerLogic(selected: someAnswer)
+    }
     
-    func request() {
+ func request() {
         
         guard let unwrappedDataQuestion = dataQuestion else {return}
         let responceData = [QuestionModel(id: 1, question: "2 + 2 = ?", correctAnswer: "4", wrongAnswers: ["3", "5", "6"]),
@@ -43,6 +46,10 @@ extension QuestionInteractor: QuestionBusinessLogic {
         let allQuestionData = responceData + responceData1 + responceData2 + responceData3
         let test = QuizzDataModel(quizzModel: unwrappedDataQuestion, questionModel: allQuestionData)
         presenter?.present(data: test)
+    }
+    
+    func moveToNextQuestion() {
+        presenter?.questionLogic()
     }
 }
 

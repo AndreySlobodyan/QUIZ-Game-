@@ -10,15 +10,16 @@ import UIKit
 class DashboardScreenTabBarController: UITabBarController {
     
     enum Tab: CaseIterable {
+        
         case quizzCollection
-        case second
+        case statisticVC
         case third
         
-    var tabImage: UIImage {
+        var tabImage: UIImage {
             switch self {
             case .quizzCollection:
                 return ImageGallery.houseFilITabImage
-            case .second:
+            case .statisticVC:
                 return ImageGallery.pencilSlashTabimage
             case .third:
                 return ImageGallery.circleFiliTabimage
@@ -28,16 +29,18 @@ class DashboardScreenTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .gray
+        tabBar.unselectedItemTintColor = .darkGray
+        tabBar.backgroundColor = .lightGray
+        view.tintColor = .white
+        view.backgroundColor = .lightGray
         
         let tabs = Tab.allCases.map { item in
             let viewController: UIViewController
             switch item {
             case .quizzCollection:
                 viewController = UINavigationController(rootViewController: QuizzCollectionScreenViewController())
-            case .second:
-                viewController = UIViewController()
+            case .statisticVC:
+                viewController = UINavigationController(rootViewController: StatisticViewController())
             case .third:
                 viewController = UIViewController()
             }

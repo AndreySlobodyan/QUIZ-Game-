@@ -15,10 +15,9 @@ protocol QuizzDisplayLogic: AnyObject {
 
 class QuizzCollectionScreenViewController: UIViewController {
     //MARK: - External Vars
-    
     private(set) var router: QuizzRoutingLogic?
     //MARK: - Internal Vars
-    
+    private let cellReuseIdentifier = "Cell"
     private var interactor: QuizzBusinessLogic?
     private var dataToDispaly = [QuizzModell]()
     //CollectionView
@@ -31,9 +30,8 @@ class QuizzCollectionScreenViewController: UIViewController {
         return view
     }()
     
-    private let cellReuseIdentifier = "Cell"
-    // MARK: - Dependency Injection
     
+    // MARK: - Dependency Injection
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         setup()
@@ -80,7 +78,6 @@ class QuizzCollectionScreenViewController: UIViewController {
     }
 }
 //MARK: - CollectionViewDataSource, UICollectionViewDelegate
-
 extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -105,7 +102,6 @@ extension QuizzCollectionScreenViewController: UICollectionViewDataSource, UICol
 }
 
 //MARK: - DisplayLogic
-
 extension QuizzCollectionScreenViewController: QuizzDisplayLogic {
     
     func display(data: [QuizzModell]) {

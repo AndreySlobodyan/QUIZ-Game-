@@ -7,10 +7,16 @@
 
 import Foundation
 import UIKit
-protocol QuestionRoutingLogic {
-    func navigateToQuizz()
-}
 
+protocol QuestionRoutingLogic {
+    
+    func navigateToQuizz(dataCorect: Int, dataWrong: Int)
+    
+    func correctAllertQuestion(completion: @escaping () -> Void)
+    
+    func wrongAllertQuestion(completion: @escaping () -> Void)
+}
+  
 protocol QuestionDataPassing {
     var dataStore: QuestionStoreProtocol? {get}
 }
@@ -22,8 +28,32 @@ class QuestionRouter: QuestionDataPassing {
 }
 
 extension QuestionRouter: QuestionRoutingLogic {
-    func navigateToQuizz() {
-        let quizzViewController = QuizzCollectionScreenViewController()
-        viewController?.navigationController?.pushViewController(quizzViewController, animated: false)
+    func correctAllertQuestion(completion: @escaping () -> Void) {
+        let alertController = UIAlertController(title: "Правильный ответ!", message: "Вы ответили верно.", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default){ (_) in
+            completion()
+        }
+        alertController.addAction(okAction)
+        viewController?.present(alertController, animated: true)
+    }
+    
+    func wrongAllertQuestion(completion: @escaping () -> Void) {
+        let alerttController = UIAlertController(title: "Ответ не правильный !", message: "Вы ответили не верно.", preferredStyle: .alert)
+        let wrongAction = UIAlertAction(title: "OK", style: .default) { (_) in
+            completion()
+            }
+        alerttController.addAction(wrongAction)
+        viewController?.present(alerttController, animated: true)
+    }
+    
+    
+    func navigateToQuizz(dataCorect: Int, dataWrong: Int) {
+         let alertController = UIAlertController(title: "Score:", message: "Correct: \(dataCorect) Wrong: \(dataWrong)", preferredStyle: .alert)
+        let nextAction = UIAlertAction(title: "Сomplete", style: .default){ [weak self] _ in
+            let quizzViewController = QuizzCollectionScreenViewController()
+            self?.viewController?.navigationController?.pushViewController(quizzViewController, animated: false)
+}
+        alertController.addAction(nextAction)
+        viewController?.present(alertController, animated: true, completion: nil)
     }
 }
