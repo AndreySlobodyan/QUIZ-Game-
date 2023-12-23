@@ -6,12 +6,18 @@
 //
 
 import Foundation
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 protocol QuestionBusinessLogic {
     
+    func saveQuestion(data: String)
+    func saveDataQuestion(wrongScore: Int, correctScore: Int, category: String)
     func request()
     func moveToNextQuestion()
     func answerDidSelect(someAnswer: String)
+    
 }
 
 protocol QuestionStoreProtocol: AnyObject {
@@ -22,30 +28,61 @@ protocol QuestionStoreProtocol: AnyObject {
 
 class QuestionInteractor: QuestionStoreProtocol {
     
+    let currentDate: Double = Date().timeIntervalSince1970
+    var questionSave: [String] = []
+    var answerSave: [String] = []
     var dataQuestion: QuizzModell?
+    var responce = [QuestionModel]()
     //MARK: -  InteractorDelegate
     var presenter: QuestionPresentahionLogic?
 }
 
 extension QuestionInteractor: QuestionBusinessLogic {
+    
+    func saveQuestion(data: String) {
+        
+        questionSave.append(data)
+    }
+    
+    func saveDataQuestion(wrongScore: Int, correctScore: Int, category: String) {
+        
+        let db = Firestore.firestore()
+        let statistic = StatisticBackend(category: category, wrongScor: wrongScore, corectScor: correctScore, isFavorite: false, documentID: " ", answer: answerSave, question: questionSave, surveyDate: currentDate )
+        
+        do {
+            let documentReference = try db.collection("statistic").addDocument(from: statistic)
+            
+            let updatedStatistic = StatisticBackend(category: category, wrongScor: wrongScore, corectScor: correctScore, isFavorite: false, documentID: documentReference.documentID, answer: answerSave, question: questionSave, surveyDate: currentDate)
+            
+            try db.collection("statistic").document(documentReference.documentID).setData(from: updatedStatistic)
+        } catch let error {
+            print("Error writing statisctic to Firestore: \(error)")
+        }
+    }
+    
     func answerDidSelect(someAnswer: String) {
+        answerSave.append(someAnswer)
         presenter?.answerLogic(selected: someAnswer)
     }
     
- func request() {
+    func request() {
         
-        guard let unwrappedDataQuestion = dataQuestion else {return}
-        let responceData = [QuestionModel(id: 1, question: "2 + 2 = ?", correctAnswer: "4", wrongAnswers: ["3", "5", "6"]),
-        QuestionModel(id: 1, question: "6 + 6 = ?", correctAnswer: "12", wrongAnswers: ["14","13","9"]),
-        QuestionModel(id: 1, question: "15 + 12 = ?", correctAnswer: "27", wrongAnswers: ["23","21","28"]),
-        QuestionModel(id: 1, question: "6 + 6 = ?", correctAnswer: "12", wrongAnswers: ["8","11","12"]),
-        QuestionModel(id: 1, question: "8 + 8 = ?", correctAnswer: "16", wrongAnswers: ["12","14","16"])]
-        let responceData1 = [QuestionModel(id: 2, question: "Какой термометр появился первым?", correctAnswer: "A", wrongAnswers: ["B", "C", "D"])]
-        let responceData2 = [QuestionModel(id: 3, question: "Что изучает ботаника?", correctAnswer: "B", wrongAnswers: ["A", "C", "D"])]
-        let responceData3 = [QuestionModel(id: 4, question: "Как называются пять океанов мира?", correctAnswer: "C", wrongAnswers: ["D", "B", "A"])]
-        let allQuestionData = responceData + responceData1 + responceData2 + responceData3
-        let test = QuizzDataModel(quizzModel: unwrappedDataQuestion, questionModel: allQuestionData)
-        presenter?.present(data: test)
+        let db = Firestore.firestore()
+        let docQuizz = db.collection("quizz").document("questionsAnswers")
+        docQuizz.getDocument(as: QuestionResponse.self){ result in
+            
+            switch result {
+                
+            case .success(let quizzResponse):
+                let quizz = Array(quizzResponse.results.values)
+                guard let unwrappedDataQuestion = self.dataQuestion else { return }
+                let dataQuestion = QuizzDataModel(quizzModel: unwrappedDataQuestion, questionModel: quizz)
+                self.presenter?.present(data: dataQuestion)
+                
+            case .failure(let error):
+                print("Error decoding questions: \(error)")
+            }
+        }
     }
     
     func moveToNextQuestion() {

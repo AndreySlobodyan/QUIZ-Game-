@@ -42,10 +42,10 @@ extension StatisticPresenter: StatisticScreanLogic {
     func displayDataCell(data: [StatisticCellModel]) {
         
         let favoriteArray = data.filter {$0.isFavorite}.sorted { (model1, model2) -> Bool in
-            return model1.Surveydate > model2.Surveydate
+            return model1.surveyDate > model2.surveyDate
         }
         let unFavoriteArayy = data.filter {!$0.isFavorite}.sorted { (model1, model2) -> Bool in
-            return model1.Surveydate > model2.Surveydate
+            return model1.surveyDate > model2.surveyDate
         }
         statisticDataСell = favoriteArray + unFavoriteArayy
         viewController?.displayDataCell(data: statisticDataСell)

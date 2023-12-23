@@ -7,9 +7,11 @@
 
 import Foundation
 
-struct DeatailsModel {
+struct DeatailsModel: Codable {
     
     let category: String
     let question: [String]
     let answer: [String]
 }
+
+

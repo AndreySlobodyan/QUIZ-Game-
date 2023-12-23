@@ -56,8 +56,7 @@ class QuizzCollectionScreenViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        interactor?.request()
+        interactor?.firData()
         setupCollectionView()
         navigationItem.hidesBackButton = true
     }
@@ -107,6 +106,7 @@ extension QuizzCollectionScreenViewController: QuizzDisplayLogic {
     func display(data: [QuizzModell]) {
         dataToDispaly.removeAll()
         dataToDispaly.append(contentsOf: data)
+        quizzCollectionView.reloadData()
         
     }
 }
