@@ -43,6 +43,7 @@ extension QuestionPresenter: QuestionPresentahionLogic {
         currentQuestionIndex += 1
         guard currentQuestionIndex < dataTodisplayQuestion?.questionModel.count ?? .zero else {
             viewController?.showQuizzScore(wrongScore: wrongQuestionScore, correctScore: correctQuestionScore)
+            viewController?.saveData(wrongScore: wrongQuestionScore, correctScore: correctQuestionScore, category: dataTodisplayQuestion?.quizzModel.categories ?? "DefaultCategory")
             return
         }
         guard let questionModel = dataTodisplayQuestion?.questionModel[currentQuestionIndex] else { return }

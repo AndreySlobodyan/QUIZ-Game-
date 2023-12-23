@@ -6,11 +6,14 @@
 //
 import Foundation
 
-struct QuizzBackendModel {
+struct QuizzBackendModel: Codable {
     
     let categories: String
-    let id: Int
-    let question: String
     let correctAnswer: String
+    let id: Int
     let wrongAnswers: [String]
+}
+
+struct QuizzResponse: Codable {
+    let results: [String: QuizzBackendModel]
 }

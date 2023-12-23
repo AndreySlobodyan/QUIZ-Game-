@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct QuestionModel {
+struct QuestionModel: Codable {
     
     let id: Int
     let question: String
@@ -15,3 +15,6 @@ struct QuestionModel {
     let wrongAnswers: [String]
 }
 
+struct QuestionResponse: Codable {
+    let results: [String: QuestionModel]
+}

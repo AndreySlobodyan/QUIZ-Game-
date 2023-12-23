@@ -10,6 +10,7 @@ import UIKit
 protocol QuestionDisplayLogic: AnyObject {
     
     func display(data: QuestionModel)
+    func saveData(wrongScore: Int, correctScore: Int, category: String)
     func showQuizzScore(wrongScore: Int, correctScore: Int)
     func wrongShowAlert()
     func correcShowAlert()
@@ -134,6 +135,7 @@ class QuestionScreenViewController: UIViewController {
     func setupQuestion(data: QuestionModel) {
         
         questionLabel.text = data.question
+        interactor?.saveQuestion(data: data.question)
     }
     
     func setupAnswers(data: QuestionModel) {
@@ -159,6 +161,11 @@ class QuestionScreenViewController: UIViewController {
 }
 //MARK: - DisplayLogic
 extension QuestionScreenViewController: QuestionDisplayLogic {
+    
+    func saveData(wrongScore: Int, correctScore: Int, category: String) {
+        interactor?.saveDataQuestion(wrongScore: wrongScore, correctScore: correctScore, category: category)
+    }
+    
     func correcShowAlert() {
         
         router?.correctAllertQuestion(completion: {[weak self] in

@@ -54,13 +54,26 @@ class StatisticViewController: UIViewController {
         
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+        
         navigationItem.title = "Statistic"
         self.segmentedControl.addTarget(self, action: #selector(segmentValueChanged), for: .valueChanged)
         setupSegment()
         setupTableView()
-        interactor?.getData()
+        Task {
+            do {
+                try await interactor?.getData()
+            } catch {
+                print("Error fetching data: \(error)")
+            }
+        }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        interactor?.dataUpdates()
     }
     
     @objc func segmentValueChanged(sender: UISegmentedControl) {
@@ -133,15 +146,17 @@ extension StatisticViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
-            
+            let cellData = self.statisticDataСell[indexPath.row]
+            self.interactor?.deleteData(document: cellData.documentID)
             self.interactor?.delletCell(index: indexPath.row)
             completionHandler(true)
         }
         
         let moreAction = UIContextualAction(style: .normal, title: "⭐️ Favorite") { (action, view, completionHandler) in
-            
             let cellData = self.statisticDataСell[indexPath.row]
+            self.interactor?.favoriteUpdates(document: cellData.documentID, isFavorite: cellData.isFavorite)
             self.interactor?.moveFavoriteCell(index: indexPath.row, favorit: !cellData.isFavorite)
             completionHandler(true)
         }
@@ -153,6 +168,8 @@ extension StatisticViewController: UITableViewDelegate, UITableViewDataSource {
 extension StatisticViewController: StatisticDisplayLogic {
     func displayDataCell(data: [StatisticCellModel]) {
         statisticDataСell = data
-        tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }
